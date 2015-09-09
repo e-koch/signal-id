@@ -111,7 +111,8 @@ class RadioMask(object):
     # Construction
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    def __init__(self, data, thresh=None, backup=True, *args):
+    def __init__(self, data, thresh=None, backup=True, struct=None,
+                 *args):
 
         if isinstance(data, SpectralCube):
                 self.from_spec_cube(data, thresh=thresh, *args)
@@ -128,6 +129,8 @@ class RadioMask(object):
         # Apply specified threshold to create an initial mask
         if thresh is not None:
             self._mask *= self.linked_data > thresh
+
+        self._struct = struct
 
         # Start log of method calls
         logging.basicConfig()
@@ -174,6 +177,16 @@ class RadioMask(object):
     @property
     def log(self):
         return self._log
+
+    @property
+    def struct(self):
+        return self._struct
+
+    @struct.setter
+    def struct(self, input_struct):
+        if not isinstance(input_struct, np.ndarray):
+            raise TypeError("input_struct must be a numpy array.")
+        self._struct = input_struct
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Output
