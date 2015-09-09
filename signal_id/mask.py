@@ -130,7 +130,7 @@ class RadioMask(object):
         if thresh is not None:
             self._mask *= self.linked_data > thresh
 
-        self._struct = struct
+        self.struct = struct
 
         # Start log of method calls
         logging.basicConfig()
