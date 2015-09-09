@@ -368,6 +368,21 @@ class RadioMask(object):
     # Manipulation
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+    def _check_use_struct(self, struct):
+        '''
+        Use global structure if another structure is not given.
+        Raise error when no global structure is defined.
+        '''
+
+        if struct is None:
+            if self.struct is None:
+                raise ValueError("There are no defined structure elements. "
+                                 "One must be provided using the 'struct' "
+                                 "argument to perform the operation.")
+            return self.struct
+        else:
+            return struct
+
     # Inversion
     def invert(self, struct=None):
         self.log_and_backup(self.invert)
