@@ -390,24 +390,28 @@ class RadioMask(object):
 
     # Dilation
     def dilate(self, struct=None, iterations=1):
+        struct = self._check_use_struct(struct)
         self.log_and_backup(self.dilate)
         self._mask = nd.binary_dilation(self._mask, structure=struct,
                                         iterations=iterations)
 
     # Erosion
     def erode(self, struct=None, iterations=1):
+        struct = self._check_use_struct(struct)
         self.log_and_backup(self.erode)
         self._mask = nd.binary_erosion(self._mask, structure=struct,
                                        iterations=iterations)
 
     # Opening
     def open(self, struct=None, iterations=1):
+        struct = self._check_use_struct(struct)
         self.log_and_backup(self.open)
         self._mask = nd.binary_opening(self._mask, structure=struct,
                                        iterations=iterations)
 
     # Closing
     def close(self, struct=None, iterations=1):
+        struct = self._check_use_struct(struct)
         self.log_and_backup(self.close)
         self._mask = nd.binary_closing(self._mask, structure=struct,
                                        iterations=iterations)
