@@ -20,6 +20,7 @@ from astropy.extern import six
 # radio tools
 from spectral_cube import SpectralCube, BooleanArrayMask
 from spectral_cube.masks import MaskBase, is_broadcastable_and_smaller
+from spectral_cube.wcs_utils import slice_wcs
 from radio_beam import Beam
 
 from .utils import get_pixel_scales
@@ -151,6 +152,9 @@ class RadioMask(MaskBase):
     def _include(self, data=None, wcs=None, view=()):
         self._validate_wcs(data, wcs)
         return self._mask._include(data=data, wcs=wcs, view=view)
+
+    def __getitem__(self, view):
+        return self._mask._include(view=view)
 
     def from_file(self, fname, thresh=None, format='fits'):
         cube = SpectralCube.read(fname, format=format)
