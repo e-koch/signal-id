@@ -146,10 +146,11 @@ class RadioMask(MaskBase):
             self.disable_backup()
 
     def _validate_wcs(self, data, wcs):
-        self._validate_wcs(data, wcs)
+        pass
 
     def _include(self, data=None, wcs=None, view=()):
-        return self._mask[view]
+        self._validate_wcs(data, wcs)
+        return self._mask._include(data=data, wcs=wcs, view=view)
 
     def from_file(self, fname, thresh=None, format='fits'):
         cube = SpectralCube.read(fname, format=format)
@@ -157,7 +158,7 @@ class RadioMask(MaskBase):
 
     def from_spec_cube(self, cube, thresh=None):
         self._linked_data = cube
-        self._mask = cube.mask.include()
+        self._mask = cube.mask
         self._wcs = cube.wcs
 
     def from_array(self, array, thresh=None, wcs=None):
