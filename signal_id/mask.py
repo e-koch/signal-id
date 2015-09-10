@@ -19,7 +19,7 @@ from astropy.extern import six
 
 # radio tools
 from spectral_cube import SpectralCube, BooleanArrayMask
-from spectral_cube.masks import is_broadcastable_and_smaller
+from spectral_cube.masks import MaskBase, is_broadcastable_and_smaller
 from radio_beam import Beam
 
 from .utils import get_pixel_scales
@@ -29,7 +29,7 @@ from .utils import get_pixel_scales
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 
 
-class RadioMask(object):
+class RadioMask(MaskBase):
     """
     Create and manipulate a binary mask for a spectral datacube. `RadioMask`
     understands and contains the associated metadata, leveraging the abilities
@@ -145,6 +145,12 @@ class RadioMask(object):
         else:
             self.disable_backup()
 
+    def _validate_wcs(self, data, wcs):
+        self._validate_wcs(data, wcs)
+
+    def _include(self, data=None, wcs=None, view=()):
+        return self._mask[view]
+
     def from_file(self, fname, thresh=None, format='fits'):
         cube = SpectralCube.read(fname, format=format)
         self.from_spec_cube(cube, thresh=None)
@@ -185,8 +191,9 @@ class RadioMask(object):
 
     @struct.setter
     def struct(self, input_struct):
-        if not isinstance(input_struct, np.ndarray):
-            raise TypeError("input_struct must be a numpy array.")
+        if input_struct is not None:
+            if not isinstance(input_struct, np.ndarray):
+                raise TypeError("input_struct must be a numpy array.")
         # Need a dimension check here too!
         self._struct = input_struct
 
