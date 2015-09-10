@@ -156,6 +156,16 @@ class RadioMask(MaskBase):
     def __getitem__(self, view):
         return self._mask._include(view=view)
 
+    def _iter_slices(self, axis):
+        """
+        Iterate over the cube one slice at a time,
+        replacing masked elements with fill
+        """
+        view = [slice(None)] * 3
+        for x in range(self.shape[axis]):
+            view[axis] = x
+            yield self._mask._include(view=view)
+
     def from_file(self, fname, thresh=None, format='fits'):
         cube = SpectralCube.read(fname, format=format)
         self.from_spec_cube(cube, thresh=None)
