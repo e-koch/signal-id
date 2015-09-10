@@ -9,6 +9,7 @@
 import time
 import copy
 import logging
+import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -186,6 +187,7 @@ class RadioMask(object):
     def struct(self, input_struct):
         if not isinstance(input_struct, np.ndarray):
             raise TypeError("input_struct must be a numpy array.")
+        # Need a dimension check here too!
         self._struct = input_struct
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -376,9 +378,9 @@ class RadioMask(object):
 
         if struct is None:
             if self.struct is None:
-                raise ValueError("There are no defined structure elements. "
-                                 "One must be provided using the 'struct' "
-                                 "argument to perform the operation.")
+                warnings.warn("There are no defined structure elements. "
+                              "The default square-connectivity element will "
+                              "be used.")
             return self.struct
         else:
             return struct
