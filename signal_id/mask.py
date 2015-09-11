@@ -18,7 +18,7 @@ from astropy import units as u
 from astropy.extern import six
 
 # radio tools
-from spectral_cube import SpectralCube, BooleanArrayMask
+from spectral_cube import SpectralCube, BooleanArrayMask, LazyMask
 from spectral_cube.masks import MaskBase, is_broadcastable_and_smaller
 from spectral_cube.wcs_utils import slice_wcs
 from radio_beam import Beam
@@ -134,6 +134,8 @@ class RadioMask(MaskBase):
 
         self.struct = struct
 
+        self._get_shape()
+
         # Start log of method calls
         logging.basicConfig()
         self._log = logging.getLogger("method_calls")
@@ -180,6 +182,7 @@ class RadioMask(MaskBase):
         self._mask = np.isfinite(array)
         self._wcs = wcs
 
+
     @property
     def linked_data(self):
         return self._linked_data
@@ -194,7 +197,26 @@ class RadioMask(MaskBase):
 
     @property
     def shape(self):
-        return self._mask.shape
+        return self._shape
+
+    def _get_shape(self):
+        if isinstance(self.mask, LazyMask):
+            ax_shape = 0
+            view = [slice(None)] * 3
+            while True:
+                view[0] = ax_shape
+                try:
+                    arr = self.include(view=view)
+                except IndexError:
+                    break
+                if ax_shape == 0:
+                    shape = arr.shape
+                ax_shape += 1
+
+            self._shape = (ax_shape,) + shape
+
+        else:
+            self._shape = self.mask.shape
 
     @property
     def log(self):
