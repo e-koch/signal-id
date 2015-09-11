@@ -195,7 +195,7 @@ class RadioMask(MaskBase):
         return self._shape
 
     def _get_shape(self):
-        if isinstance(self.mask, LazyMask):
+        if isinstance(self._mask, LazyMask):
             ax_shape = 0
             view = [slice(None)] * 3
             while True:
@@ -211,7 +211,7 @@ class RadioMask(MaskBase):
             self._shape = (ax_shape,) + shape
 
         else:
-            self._shape = self.mask.shape
+            self._shape = self._mask.shape
 
     @property
     def log(self):
@@ -546,7 +546,7 @@ class RadioMask(MaskBase):
         if not isinstance(func_args, tuple):
             func_args = (func_args, )
 
-        nplanes = self.mask.shape[iteraxis]
+        nplanes = self._mask.shape[iteraxis]
         plane_slice = [slice(None)] * self._wcs.naxis
         # Now iterate through the planes
         for plane in range(nplanes):
