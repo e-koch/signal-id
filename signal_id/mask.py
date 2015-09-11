@@ -182,14 +182,9 @@ class RadioMask(MaskBase):
         self._mask = np.isfinite(array)
         self._wcs = wcs
 
-
     @property
     def linked_data(self):
         return self._linked_data
-
-    @property
-    def mask(self):
-        return self._mask
 
     @property
     def wcs(self):
