@@ -404,7 +404,7 @@ class RadioMask(MaskBase):
     # Inversion
     def invert(self, struct=None):
         self.log_and_backup(self.invert)
-        self._mask = np.logical_not(self._mask)
+        self._mask = ~self._mask
 
     # Dilation
     def dilate(self, struct=None, iterations=1):
