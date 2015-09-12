@@ -255,14 +255,6 @@ class RadioMask(MaskBase):
         return SpectralCube(self._mask.astype(dtype),
                             wcs=self._wcs)
 
-    def to_mask(self):
-        return BooleanArrayMask(self._mask, self._wcs)
-
-    def to_invertedmask(self):
-        copy_mask = self.copy()
-        copy_mask.invert()
-        return BooleanArrayMask(self._mask, self._wcs)
-
     def write(self, fname, dtype=int):
         """
         Write to a file. Default to using ints.
