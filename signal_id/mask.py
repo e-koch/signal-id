@@ -279,29 +279,6 @@ class RadioMask(MaskBase):
         cube = self.as_spec_cube(dtype=dtype)
         cube.write(fname)
 
-    def attach_to_cube(self, cube=None, empty=np.NaN):
-        """
-        Attach the mask to a cube.
-        """
-        if cube is None:
-            cube = self.linked_data
-
-        if isinstance(cube, SpectralCube):
-            mask = BooleanArrayMask(self._mask, self._wcs)
-            return cube.with_mask(mask)
-
-        if isinstance(cube, np.ndarray):
-            if cube.shape == self._mask.shape:
-                # Replace False with NaNs
-                cube = np.where(self._mask, cube, empty)
-            else:
-                raise ValueError("Mask is not the same shape as the cube.")
-
-        else:
-            raise TypeError("Cube insufficiently specified.")
-
-        return cube
-
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Expose the mask in various ways
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
