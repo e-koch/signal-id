@@ -352,7 +352,7 @@ class RadioMask(MaskBase):
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
 
-        self._mask = np.logical_or(self._mask, other)
+        self._mask = self._mask | other
 
     # Intersection
     def intersection(self, other):
@@ -363,7 +363,7 @@ class RadioMask(MaskBase):
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
 
-        self._mask = np.logical_and(self._mask, other)
+        self._mask = self._mask and other
 
     # Exclusive or
     def xor(self, other):
