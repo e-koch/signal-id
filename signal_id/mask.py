@@ -395,6 +395,12 @@ class RadioMask(MaskBase):
         else:
             return struct
 
+    def _add_struct_axis(self, add_axis=None):
+        if add_axis is not None:
+            slices = [slice(None)] * 3
+            slices[add_axis] = np.newaxis
+            self.struct = self.struct[slices]
+
     # Inversion
     def invert(self, struct=None):
         self.log_and_backup(self.invert)
