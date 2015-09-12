@@ -351,6 +351,8 @@ class RadioMask(MaskBase):
 
     def enable_backup(self):
         self.is_backup_enabled = True
+        if not hasattr(self, '_backup'):
+            self._backup = None
 
     def disable_backup(self):
         self.is_backup_enabled = False
@@ -546,17 +548,14 @@ class RadioMask(MaskBase):
         if not isinstance(func_args, tuple):
             func_args = (func_args, )
 
-        nplanes = self._mask.shape[iteraxis]
-        plane_slice = [slice(None)] * self._wcs.naxis
+        nplanes = self.shape[0]
         # Now iterate through the planes
-        for plane in range(nplanes):
+        for i, plane in enumerate(self._iter_slices(0)):
             if verbose:
-                print("On plane "+str(plane)+" of "+str(nplanes))
+                print("On plane "+str(i)+" of "+str(nplanes))
             plane_slice[iteraxis] = plane
             self._mask[plane_slice] = \
                 func(self._mask[plane_slice], *func_args)
-
-        return self
 
     # Reject on volume (special case)
     def reject_on_volume(self, thresh=None, struct=None):
