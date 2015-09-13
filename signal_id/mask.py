@@ -409,7 +409,25 @@ class RadioMask(MaskBase):
         Function for general mask manipulations. Returns new mask
         as a BooleanArrayMask.
         '''
-        pass
+
+        if iteraxis is not None:
+            struct = self.struct.squeeze()
+            kwargs['structure'] = struct
+
+            for i, plane in enumerate(self._iter_slices(iteraxis)):
+
+                out_plane = function(plane, *args, **kwargs)
+
+                if i == 0:
+                    output = out_plane
+                else:
+                    output = np.append(output, out_plane, axis=iteraxis)
+
+        else:
+            kwargs['structure'] = struct
+            output = function(self._mask.include(), *args, **kwargs)
+
+        self._mask = BooleanArrayMask(output, self.wcs)
 
     # Dilation
     def dilate(self, struct=None, iterations=1, iteraxis=None):
