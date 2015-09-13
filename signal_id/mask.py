@@ -376,6 +376,11 @@ class RadioMask(MaskBase):
 
         self._mask = self._mask ^ other
 
+    # Inversion
+    def invert(self, struct=None):
+        self.log_and_backup(self.invert)
+        self._mask = ~self._mask
+
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Manipulation
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -400,11 +405,6 @@ class RadioMask(MaskBase):
             slices = [slice(None)] * 3
             slices[add_axis] = np.newaxis
             self.struct = self.struct[slices]
-
-    # Inversion
-    def invert(self, struct=None):
-        self.log_and_backup(self.invert)
-        self._mask = ~self._mask
 
     # Dilation
     def dilate(self, struct=None, iterations=1):
