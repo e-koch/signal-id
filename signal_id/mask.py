@@ -414,17 +414,22 @@ class RadioMask(MaskBase):
             struct = self.struct.squeeze()
             kwargs['structure'] = struct
 
+            # Add the sliced dimension back in to restore cube shape
+            add_axis = [slice(None)] * 3
+            add_axis[iteraxis] = np.newaxis
+
             for i, plane in enumerate(self._iter_slices(iteraxis)):
 
                 out_plane = function(plane, *args, **kwargs)
 
                 if i == 0:
-                    output = out_plane
+                    output = out_plane[add_axis]
                 else:
-                    output = np.append(output, out_plane, axis=iteraxis)
+                    output = np.append(output, out_plane[add_axis],
+                                       axis=iteraxis)
 
         else:
-            kwargs['structure'] = struct
+            kwargs['structure'] = self.struct
             output = function(self._mask.include(), *args, **kwargs)
 
         self._mask = BooleanArrayMask(output, self.wcs)
