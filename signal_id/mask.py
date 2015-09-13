@@ -403,12 +403,6 @@ class RadioMask(MaskBase):
         else:
             return struct
 
-    def _add_struct_axis(self, add_axis=None):
-        if add_axis is not None:
-            slices = [slice(None)] * 3
-            slices[add_axis] = np.newaxis
-            self.struct = self.struct[slices]
-
     def _apply_manipulation(self, function, args=(), kwargs={},
                             iteraxis=None):
         '''
