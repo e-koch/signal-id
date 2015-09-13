@@ -343,37 +343,35 @@ class RadioMask(MaskBase):
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Operators
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    # Union
-    def union(self, other, wcs=None):
-        self.log_and_backup(self.union)
+
+    def _precheck_operator(self, other, wcs=None):
         if isinstance(other, np.ndarray):
+            if wcs is None:
+                raise TypeError("wcs object must be given when other is "
+                                "a numpy array.")
             other = BooleanArrayMask(other, wcs)
         # Check if arrays are broadcastable
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
 
+        return other
+
+    # Union
+    def union(self, other, wcs=None):
+        self.log_and_backup(self.union)
+        self._precheck_operator(other, wcs=wcs)
         self._mask = self._mask | other
 
     # Intersection
     def intersection(self, other, wcs=None):
         self.log_and_backup(self.intersection)
-        if isinstance(other, np.ndarray):
-            other = BooleanArrayMask(other, wcs)
-        # Check if arrays are broadcastable
-        if not is_broadcastable_and_smaller(self.shape, other.shape):
-            raise ValueError("Mask shapes are not broadcastable.")
-
+        self._precheck_operator(other, wcs=wcs)
         self._mask = self._mask and other
 
     # Exclusive or
     def xor(self, other, wcs=None):
         self.log_and_backup(self.xor)
-        if isinstance(other, np.ndarray):
-            other = BooleanArrayMask(other, wcs)
-        # Check if arrays are broadcastable
-        if not is_broadcastable_and_smaller(self.shape, other.shape):
-            raise ValueError("Mask shapes are not broadcastable.")
-
+        self._precheck_operator(other, wcs=wcs)
         self._mask = self._mask ^ other
 
     # Inversion
