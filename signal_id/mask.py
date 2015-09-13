@@ -552,13 +552,21 @@ class RadioMask(MaskBase):
             func_args = (func_args, )
 
         nplanes = self.shape[0]
+        add_axis = [slice(None)] * 3
+        add_axis[iteraxis] = np.newaxis
+
         # Now iterate through the planes
-        for i, plane in enumerate(self._iter_slices(0)):
+        for i, plane in enumerate(self._iter_slices(iteraxis)):
             if verbose:
                 print("On plane "+str(i)+" of "+str(nplanes))
-            plane_slice[iteraxis] = plane
-            self._mask[plane_slice] = \
-                func(self._mask[plane_slice], *func_args)
+            output_plane = func(plane, *func_args)
+            if i == 0:
+                output = output_plane[add_axis]
+            else:
+                output = np.append(output, output_plane[add_axis],
+                                   axis=iteraxis)
+
+        self._mask = BooleanArrayMask(output, self.wcs)
 
     # Reject on volume (special case)
     def reject_on_volume(self, thresh=None, struct=None):
