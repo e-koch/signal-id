@@ -344,10 +344,10 @@ class RadioMask(MaskBase):
     # Operators
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Union
-    def union(self, other):
+    def union(self, other, wcs=None):
         self.log_and_backup(self.union)
-        if isinstance(other, RadioMask):
-            other = other.mask
+        if isinstance(other, np.ndarray):
+            other = BooleanArrayMask(other, wcs)
         # Check if arrays are broadcastable
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
@@ -355,10 +355,10 @@ class RadioMask(MaskBase):
         self._mask = self._mask | other
 
     # Intersection
-    def intersection(self, other):
+    def intersection(self, other, wcs=None):
         self.log_and_backup(self.intersection)
-        if isinstance(other, RadioMask):
-            other = other.mask
+        if isinstance(other, np.ndarray):
+            other = BooleanArrayMask(other, wcs)
         # Check if arrays are broadcastable
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
@@ -366,15 +366,15 @@ class RadioMask(MaskBase):
         self._mask = self._mask and other
 
     # Exclusive or
-    def xor(self, other):
+    def xor(self, other, wcs=None):
         self.log_and_backup(self.xor)
-        if isinstance(other, RadioMask):
-            other = other.mask
+        if isinstance(other, np.ndarray):
+            other = BooleanArrayMask(other, wcs)
         # Check if arrays are broadcastable
         if not is_broadcastable_and_smaller(self.shape, other.shape):
             raise ValueError("Mask shapes are not broadcastable.")
 
-        self._mask = np.logical_xor(self._mask, other)
+        self._mask = self._mask ^ other
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # Manipulation
