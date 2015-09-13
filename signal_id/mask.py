@@ -375,7 +375,7 @@ class RadioMask(MaskBase):
         self._mask = self._mask ^ other
 
     # Inversion
-    def invert(self, struct=None):
+    def invert(self):
         self.log_and_backup(self.invert)
         self._mask = ~self._mask
 
