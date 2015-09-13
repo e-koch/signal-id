@@ -226,7 +226,12 @@ class RadioMask(MaskBase):
         if input_struct is not None:
             if not isinstance(input_struct, np.ndarray):
                 raise TypeError("input_struct must be a numpy array.")
-        # Need a dimension check here too!
+
+        if input_struct.ndim < 2 or input_struct.ndim > 3:
+            raise ValueError("struct must be 2- or 3-dimensional.")
+        elif input_struct.ndim == 2:
+            input_struct = input_struct[np.newaxis, :, :]
+
         self._struct = input_struct
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -404,29 +409,37 @@ class RadioMask(MaskBase):
             slices[add_axis] = np.newaxis
             self.struct = self.struct[slices]
 
+    def _apply_manipulation(self, function, args=(), kwargs={},
+                            iteraxis=None):
+        '''
+        Function for general mask manipulations. Returns new mask
+        as a BooleanArrayMask.
+        '''
+        pass
+
     # Dilation
-    def dilate(self, struct=None, iterations=1):
+    def dilate(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.dilate)
         self._mask = nd.binary_dilation(self._mask, structure=struct,
                                         iterations=iterations)
 
     # Erosion
-    def erode(self, struct=None, iterations=1):
+    def erode(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.erode)
         self._mask = nd.binary_erosion(self._mask, structure=struct,
                                        iterations=iterations)
 
     # Opening
-    def open(self, struct=None, iterations=1):
+    def open(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.open)
         self._mask = nd.binary_opening(self._mask, structure=struct,
                                        iterations=iterations)
 
     # Closing
-    def close(self, struct=None, iterations=1):
+    def close(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.close)
         self._mask = nd.binary_closing(self._mask, structure=struct,
