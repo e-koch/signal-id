@@ -403,7 +403,7 @@ class RadioMask(MaskBase):
         else:
             return struct
 
-    def _apply_manipulation(self, function, args=(), kwargs={},
+    def _apply_manipulation(self, function, struct, args=(), kwargs={},
                             iteraxis=None):
         '''
         Function for general mask manipulations. Returns new mask
@@ -411,7 +411,7 @@ class RadioMask(MaskBase):
         '''
 
         if iteraxis is not None:
-            struct = self.struct.squeeze()
+            struct = struct.squeeze()
             kwargs['structure'] = struct
 
             # Add the sliced dimension back in to restore cube shape
@@ -429,7 +429,7 @@ class RadioMask(MaskBase):
                                        axis=iteraxis)
 
         else:
-            kwargs['structure'] = self.struct
+            kwargs['structure'] = struct
             output = function(self._mask.include(), *args, **kwargs)
 
         self._mask = BooleanArrayMask(output, self.wcs)
@@ -438,29 +438,29 @@ class RadioMask(MaskBase):
     def dilate(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.dilate)
-        self._mask = nd.binary_dilation(self._mask, structure=struct,
-                                        iterations=iterations)
+        self._apply_manipulation(nd.binary_dilation, struct,
+                                 kwargs={'iterations': iterations})
 
     # Erosion
     def erode(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.erode)
-        self._mask = nd.binary_erosion(self._mask, structure=struct,
-                                       iterations=iterations)
+        self._apply_manipulation(nd.binary_erosion, struct,
+                                 kwargs={'iterations': iterations})
 
     # Opening
     def open(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.open)
-        self._mask = nd.binary_opening(self._mask, structure=struct,
-                                       iterations=iterations)
+        self._apply_manipulation(nd.binary_opening, struct,
+                                 kwargs={'iterations': iterations})
 
     # Closing
     def close(self, struct=None, iterations=1, iteraxis=None):
         struct = self._check_use_struct(struct)
         self.log_and_backup(self.close)
-        self._mask = nd.binary_closing(self._mask, structure=struct,
-                                       iterations=iterations)
+        self._apply_manipulation(nd.binary_closing, struct,
+                                 kwargs={'iterations': iterations})
 
     def remove_small_regions(self, area_threshold=None, beam=None,
                              verbose=False):
