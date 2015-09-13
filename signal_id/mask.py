@@ -227,10 +227,10 @@ class RadioMask(MaskBase):
             if not isinstance(input_struct, np.ndarray):
                 raise TypeError("input_struct must be a numpy array.")
 
-        if input_struct.ndim < 2 or input_struct.ndim > 3:
-            raise ValueError("struct must be 2- or 3-dimensional.")
-        elif input_struct.ndim == 2:
-            input_struct = input_struct[np.newaxis, :, :]
+            if input_struct.ndim < 2 or input_struct.ndim > 3:
+                raise ValueError("struct must be 2- or 3-dimensional.")
+            elif input_struct.ndim == 2:
+                input_struct = input_struct[np.newaxis, :, :]
 
         self._struct = input_struct
 
