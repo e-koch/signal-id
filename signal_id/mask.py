@@ -18,7 +18,8 @@ from astropy import units as u
 from astropy.extern import six
 
 # radio tools
-from spectral_cube import SpectralCube, BooleanArrayMask, LazyMask
+from spectral_cube import SpectralCube
+from spectral_cube import BooleanArrayMask, LazyMask, CompositeMask
 from spectral_cube.masks import MaskBase, is_broadcastable_and_smaller
 from spectral_cube.wcs_utils import slice_wcs
 from radio_beam import Beam
@@ -195,7 +196,7 @@ class RadioMask(MaskBase):
         return self._shape
 
     def _get_shape(self):
-        if isinstance(self._mask, LazyMask):
+        if isinstance(self._mask, LazyMask) or isinstance(self._mask, CompositeMask):
             ax_shape = 0
             view = [slice(None)] * 3
             while True:
@@ -337,7 +338,7 @@ class RadioMask(MaskBase):
         '''
         self._log.info(func.__name__)
         if self.is_backup_enabled:
-            self._backup = self._mask.copy()
+            self._backup = copy.deepcopy(self._mask)
 
     def undo(self):
         self._log.info("UNDO")
