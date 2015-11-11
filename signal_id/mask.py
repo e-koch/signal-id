@@ -16,12 +16,15 @@ import matplotlib.pyplot as plt
 import scipy.ndimage as nd
 from astropy import units as u
 from astropy.extern import six
+from astropy.wcs import WCS
+from astropy.io import fits
 
 # radio tools
 from spectral_cube import SpectralCube
 from spectral_cube import BooleanArrayMask, LazyMask, CompositeMask
 from spectral_cube.masks import MaskBase, is_broadcastable_and_smaller
 from spectral_cube.wcs_utils import slice_wcs
+from spectral_cube.io.fits import read_data_fits
 from radio_beam import Beam
 
 from .utils import get_pixel_scales
@@ -115,16 +118,16 @@ class RadioMask(MaskBase):
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     def __init__(self, data, thresh=None, backup=True, struct=None,
-                 *args):
+                 **kwargs):
 
         if isinstance(data, SpectralCube):
-                self.from_spec_cube(data, thresh=thresh, *args)
+                self.from_spec_cube(data, thresh=thresh, **kwargs)
 
         elif isinstance(data, six.string_types):
-            self.from_file(data, *args)
+            self.from_file(data, **kwargs)
 
         elif isinstance(data, np.ndarray):
-            self.from_array(data, *args)
+            self.from_array(data, **kwargs)
 
         else:
             raise TypeError("Input of type %s is not accepted." % (type(data)))
@@ -169,16 +172,23 @@ class RadioMask(MaskBase):
             view[axis] = x
             yield self._mask._include(view=view)
 
-    def from_file(self, fname, thresh=None, format='fits'):
-        cube = SpectralCube.read(fname, format=format)
-        self.from_spec_cube(cube, thresh=None)
+    def from_file(self, fname, format='fits', **kwargs):
 
-    def from_spec_cube(self, cube, thresh=None):
+        if "memmap" in kwargs:
+            if kwargs["memmap"]:
+                kwargs["mode"] = "denywrite"
+
+        data, header = read_data_fits(fname, format=format, **kwargs)
+        self._linked_data = None
+        self._wcs = WCS(header)
+        self._mask = BooleanArrayMask(data, self.wcs)
+
+    def from_spec_cube(self, cube):
         self._linked_data = cube
         self._mask = cube.mask
         self._wcs = cube.wcs
 
-    def from_array(self, array, thresh=None, wcs=None):
+    def from_array(self, array, wcs=None):
         self._linked_data = array
         self._mask = np.isfinite(array)
         self._wcs = wcs
