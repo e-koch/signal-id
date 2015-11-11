@@ -27,7 +27,7 @@ from spectral_cube.wcs_utils import slice_wcs
 from spectral_cube.io.fits import read_data_fits
 from radio_beam import Beam
 
-from .utils import get_pixel_scales
+from .utils import get_pixel_scales, get_stokes_axis
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # BASE CLASS
@@ -179,9 +179,17 @@ class RadioMask(MaskBase):
                 kwargs["mode"] = "denywrite"
 
         data, header = read_data_fits(fname, format=format, **kwargs)
+
+        mywcs = WCS(header)
+
+        stokes_axis = get_stokes_axis(mywcs)
+        if stokes_axis is not None:
+            mywcs = mywcs.dropaxis(stokes_axis)
+            data = data.squeeze()
+
         self._linked_data = None
-        self._wcs = WCS(header)
-        self._mask = BooleanArrayMask(data, self.wcs)
+        self._wcs = mywcs
+        self._mask = BooleanArrayMask(data, mywcs)
 
     def from_spec_cube(self, cube):
         self._linked_data = cube

@@ -12,6 +12,7 @@ except ImportError:
 
 import numpy as np
 import scipy.stats as ss
+import warnings
 
 
 def mad(data, sigma=True, axis=None,
@@ -138,3 +139,17 @@ def get_pixel_scales(mywcs):
     #scale = np.array([cdelt[0] * (pc[0,0]**2 + pc[1,0]**2)**0.5,
     # cdelt[1] * (pc[0,1]**2 + pc[1,1]**2)**0.5])
     #return abs(scale[0])
+
+def get_stokes_axis(wcs):
+
+    for i, axis_dict in enumerate(wcs.get_axis_types()):
+        if axis_dict["coordinate_type"] != "stokes":
+            continue
+
+        stokes_axis = i
+        break
+    else:
+        warnings.warn("No stokes axis in the given WCS.")
+        stokes_axis = None
+
+    return stokes_axis
