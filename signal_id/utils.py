@@ -8,7 +8,7 @@ Utility functions used in signal_id
 try:
     from bottleneck import nanmedian, nanstd
 except ImportError:
-    from scipy.stats import nanmedian, nanstd
+    from numpy import nanmedian, nanstd
 
 import numpy as np
 import scipy.stats as ss

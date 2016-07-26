@@ -29,11 +29,17 @@ from spectral_cube import SpectralCube, BooleanArrayMask
 try:
     from radio_beam import Beam
 except ImportError:
-    warnings.warn("No radio_beam.Beam instances found. Convolution\
-     with radio beams will not work")
+    warnings.warn("No radio_beam.Beam instances found. Convolution"
+                  " with radio beams will not work")
     Beam = type(None)
+
+try:
+    from bottleneck import nanstd
+except ImportError:
+    from numpy import nanstd
+
 # Utility functions from this package
-from utils import *
+from utils import mad, sigma_rob, sig_n_outliers, get_pixel_scales
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # The Noise Object
@@ -128,7 +134,7 @@ class Noise(object):
             deviation.  Default: 'MAD'
 
         """
-        if isinstance(cube,SpectralCube):
+        if isinstance(cube, SpectralCube):
             self.cube = cube
         elif isinstance(cube, str):
             self.cube = SpectralCube.read(cube)
