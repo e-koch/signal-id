@@ -384,38 +384,3 @@ def linewidth_fwhm_err(cube, scale, how='auto', moment0=None, moment1=None,
                                          moment2, moment1_err)
 
     return SIGMA2FWHM * del_lwidth_sig
-
-
-def moment_raywise(cube, order, axis):
-    """
-    Compute moments by accumulating the answer one ray at a time
-    """
-    shp = _moment_shp(cube, axis)
-    out = np.zeros(shp) * np.nan
-
-    pix_cen = cube._pix_cen()[axis]
-    pix_size = cube._pix_size()[axis]
-
-    for x, y, slc in cube._iter_rays(axis):
-        # the intensity, i.e. the weights
-        include = cube._mask.include(data=cube._data, wcs=cube._wcs,
-                                     view=slc)
-        if not include.any():
-            continue
-
-        data = cube.flattened(slc).value * pix_size[slc][include]
-
-        if order == 0:
-            out[x, y] = data.sum()
-            continue
-
-        order1 = (data * pix_cen[slc][include]).sum() / data.sum()
-        if order == 1:
-            out[x, y] = order1
-            continue
-
-        ordern = (data * (pix_cen[slc][include] - order1) ** order).sum()
-        ordern /= data.sum()
-
-        out[x, y] = ordern
-    return out
