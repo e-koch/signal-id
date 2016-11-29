@@ -25,7 +25,7 @@ characterizes the noise.
 np2wcs = {2: 0, 1: 1, 0: 2}
 
 
-def moment0_error(cube, scale, axis, how='auto'):
+def moment0_error(cube, scale, axis=0, how='auto'):
     '''
     Compute the zeroth moment error.
 
@@ -75,7 +75,7 @@ def moment0_error(cube, scale, axis, how='auto'):
                       header=cube._nowcs_header)
 
 
-def moment1_error(cube, scale, axis, how='auto', moment0=None, moment1=None):
+def moment1_error(cube, scale, axis=0, how='auto', moment0=None, moment1=None):
     '''
     Compute the first moment error.
 
@@ -136,7 +136,7 @@ def moment1_error(cube, scale, axis, how='auto', moment0=None, moment1=None):
                       header=cube._nowcs_header)
 
 
-def moment2_error(cube, scale, axis, how='auto', moment0=None, moment1=None,
+def moment2_error(cube, scale, axis=0, how='auto', moment0=None, moment1=None,
                   moment2=None, moment1_err=None):
     '''
     Compute the second moment error.
