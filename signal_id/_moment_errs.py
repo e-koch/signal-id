@@ -113,7 +113,7 @@ def moment1_error(cube, scale, axis, how='auto', moment0=None, moment1=None):
 
     # Remove velocity offset from centroid to match cube._pix_cen
     # Requires converting to a Quantity
-    moment1 = u.Quantity(moment1)
+    moment1 = u.Quantity(moment1.copy())
     moment1 -= cube.spectral_axis[0]
 
     if how == "cube":
@@ -175,7 +175,7 @@ def moment2_error(cube, scale, axis, how='auto', moment0=None, moment1=None,
 
     # Remove velocity offset to match cube._pix_cen
     # Requires converting to a Quantity
-    moment1 = u.Quantity(moment1)
+    moment1 = u.Quantity(moment1.copy())
     moment1 -= cube.spectral_axis[0]
 
     if moment2 is None:
