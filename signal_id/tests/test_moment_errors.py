@@ -11,8 +11,8 @@ from spectral_cube import SpectralCube
 from astropy.wcs import WCS
 from astropy.io import fits
 
-from signal_id._moment_errs import (_slice0, _slice1, _slice2, _cube0, _cube1,
-                                    _cube2, linewidth_sigma_err,
+from signal_id._moment_errs import (moment0_error, moment1_error,
+                                    moment2_error, linewidth_sigma_err,
                                     linewidth_fwhm_err)
 
 
@@ -123,9 +123,9 @@ def test_slice_errs():
 
     comp_vals = comparison_values()
 
-    mom0_err = _slice0(test_cube, 0, test_cube_err)
-    mom1_err = _slice1(test_cube, 0, test_cube_err)
-    mom2_err = _slice2(test_cube, 0, test_cube_err)
+    mom0_err = moment0_error(test_cube, test_cube_err, axis=0, how='slice')
+    mom1_err = moment1_error(test_cube, test_cube_err, axis=0, how='slice')
+    mom2_err = moment2_error(test_cube, test_cube_err, axis=0, how='slice')
 
     assert mom0_err == comp_vals["mom0_err"]
     assert mom1_err == comp_vals["errmn"]
@@ -141,9 +141,9 @@ def test_cube_errs():
 
     comp_vals = comparison_values()
 
-    mom0_err = _cube0(test_cube, 0, test_cube_err)
-    mom1_err = _cube1(test_cube, 0, test_cube_err)
-    mom2_err = _cube2(test_cube, 0, test_cube_err)
+    mom0_err = moment0_error(test_cube, test_cube_err, axis=0, how='cube')
+    mom1_err = moment1_error(test_cube, test_cube_err, axis=0, how='cube')
+    mom2_err = moment2_error(test_cube, test_cube_err, axis=0, how='cube')
 
     assert mom0_err == comp_vals["mom0_err"]
     assert mom1_err == comp_vals["errmn"]
